@@ -3,6 +3,7 @@
 class Lists
   def initialize(session = { lists: [] })
     @session = session
+    session[:lists] ||= []
   end
 
   def all
