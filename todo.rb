@@ -29,6 +29,8 @@ end
 
 # Create new list
 post '/lists' do
-  Lists.new(session).create(params[:list_name])
+  list_name = params[:list_name]
+  Lists.new(session).create(list_name)
+  session[:success] = "#{list_name} created."
   redirect '/lists'
 end
