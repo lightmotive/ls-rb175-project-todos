@@ -16,15 +16,18 @@ get '/' do
   redirect '/lists'
 end
 
+# Render list of lists
 get '/lists' do
   @lists = Lists.new(session).all
   erb :lists
 end
 
+# Render New List form
 get '/lists/create' do
   erb :list_create
 end
 
+# Create new list
 post '/lists' do
   Lists.new(session).create(params[:list_name])
   redirect '/lists'
