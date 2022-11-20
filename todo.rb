@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require 'sinatra'
-require 'sinatra/reloader'
-require 'tilt/erubis'
+
 require './lists'
+
+require 'sinatra/reloader' if development?
+require 'tilt/erubis'
 
 configure do
   enable :sessions
@@ -32,7 +34,13 @@ end
 # Create new list
 post '/lists' do
   list_name = params[:list_name]
-  Lists.new(session).create(list_name)
-  session[:success] = "#{list_name} created."
-  redirect '/lists'
+  begin
+    Lists.new(session).create(list_name)
+    session[:success] = "#{list_name} created."
+    redirect '/lists'
+  rescue StandardError => e
+    session[:error] = e.message
+    @list_name_value = list_name
+    erb :list_create
+  end
 end
