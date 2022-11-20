@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sanitize'
+
 class Lists
   def initialize(session = { lists: [] })
     @session = session
@@ -30,7 +32,7 @@ class Lists
   end
 
   def validate_create(name)
-    name = name.strip
+    name = Sanitize.fragment(name).strip
     raise StandardError, "Please enter a name that's between 1 and 100 characters." unless name.length.between?(1, 100)
     raise StandardError, 'That list name exists. Please enter a unique list name.' if list_names.include?(name)
 
