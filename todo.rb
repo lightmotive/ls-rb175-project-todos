@@ -15,15 +15,8 @@ configure do
   # SecureRandom.hex(32)
 end
 
-helpers do
-  def list_edit_template
-    erb :list_edit
-  end
-end
-
 before '/list/:list_idx*' do
-  @list_id = params[:list_idx].to_i
-  @list = Lists.new(session)[@list_id]
+  @list = Lists.new(session)[params[:list_idx].to_i]
   if @list.nil?
     session[:error] = 'List not found.'
     redirect '/lists'
@@ -56,11 +49,9 @@ get '/list/:list_idx/add' do
   erb :list
 end
 
-# Render list details with edit form
+# Render list edit form
 get '/list/:list_idx/edit' do
-  @edit_list = true
-  @list_name_value = @list[:name]
-  erb :list
+  erb :list_edit
 end
 
 # Create new list
@@ -73,23 +64,21 @@ post '/lists' do
     end
   rescue ValidationError => e
     session[:error] = e.message
-    @list_name_value = list_name
     erb :list_create
   end
 end
 
-# Update list details
+# Update existing list
 post '/list/:list_idx' do
   list_name = params[:list_name]
 
   begin
-    Lists.new(session).edit(@list_id, list_name) do
+    Lists.new(session).edit(params[:list_idx].to_i, list_name) do
       session[:success] = 'List name updated.'
-      redirect "/list/#{@list_id}"
+      redirect "/list/#{params[:list_idx]}"
     end
   rescue ValidationError => e
     session[:error] = e.message
-    @list_name_value = list_name
     erb :list_edit
   end
 end

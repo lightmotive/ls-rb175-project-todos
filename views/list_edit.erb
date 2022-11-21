@@ -1,14 +1,14 @@
-<form action="/list/<%= @list_id %>" method="post">
+<form action="/list/<%= params[:list_idx] %>" method="post">
   <dl>
     <dt>
       <label for="list_name">Edit list name:</label>
     </dt>
     <dd>
-      <input name="list_name" placeholder="List Name" type="text" value="<%= @list_name_value %>">
+      <input name="list_name" placeholder="Current: <%= @list[:name] %>" type="text" value="<%= params[:list_name] || @list[:name] %>">
     </dd>
   </dl>
   <fieldset class="actions">
     <input type="submit" value="Save">
-    <a href="/list/<%= @list_id %>">Cancel</a>
+    <a href="/list/<%= params[:list_idx] %>">Cancel</a>
   </fieldset>
 </form>
