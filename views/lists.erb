@@ -3,9 +3,9 @@
 <% end %>
 
 <ul id='lists'>
-  <% @lists.each_with_index do |list, list_idx| %>
+  <% @lists.each_with_index do |list, list_id| %>
   <li>
-    <a href='/list/<%= list_idx %>'>
+    <a href='/list/<%= list_id %>'>
       <h2><%= list[:name] %></h2>
       <p><%= list[:todos].size %></p>
     </a>

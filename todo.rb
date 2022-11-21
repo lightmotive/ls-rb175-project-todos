@@ -15,8 +15,8 @@ configure do
   # SecureRandom.hex(32)
 end
 
-before '/list/:list_idx*' do
-  @list = Lists.new(session)[params[:list_idx].to_i]
+before '/list/:list_id*' do
+  @list = Lists.new(session)[params[:list_id].to_i]
   if @list.nil?
     session[:error] = 'List not found.'
     redirect '/lists'
@@ -39,18 +39,18 @@ get '/lists/create' do
 end
 
 # Render list details (Todos)
-get '/list/:list_idx' do
+get '/list/:list_id' do
   erb :list
 end
 
 # Render list with Add Todo form
-get '/list/:list_idx/add' do
+get '/list/:list_id/add' do
   @add_todo = true
   erb :list
 end
 
 # Render list edit form
-get '/list/:list_idx/edit' do
+get '/list/:list_id/edit' do
   erb :list_edit
 end
 
@@ -69,13 +69,13 @@ post '/lists' do
 end
 
 # Update existing list
-post '/list/:list_idx' do
+post '/list/:list_id' do
   list_name = params[:list_name]
 
   begin
-    Lists.new(session).edit(params[:list_idx].to_i, list_name) do
+    Lists.new(session).edit(params[:list_id].to_i, list_name) do
       session[:success] = 'List name updated.'
-      redirect "/list/#{params[:list_idx]}"
+      redirect "/list/#{params[:list_id]}"
     end
   rescue ValidationError => e
     session[:error] = e.message
