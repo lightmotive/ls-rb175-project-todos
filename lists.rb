@@ -22,6 +22,10 @@ class Lists
     end
   end
 
+  def [](idx)
+    data[idx]
+  end
+
   private
 
   attr_reader :session

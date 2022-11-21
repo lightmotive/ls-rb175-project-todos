@@ -14,6 +14,14 @@ configure do
   # SecureRandom.hex(32)
 end
 
+before '/list/:list_idx*' do
+  @list = Lists.new(session)[params[:list_idx].to_i]
+  if @list.nil?
+    session[:error] = 'List not found.'
+    redirect '/lists'
+  end
+end
+
 get '/' do
   redirect '/lists'
 end
@@ -27,6 +35,16 @@ end
 # Render New List form
 get '/lists/create' do
   erb :list_create
+end
+
+# Render list details (Todos)
+get '/list/:list_idx' do
+  erb :list
+end
+
+get '/list/:list_idx/add' do
+  @add_todo = true
+  erb :list
 end
 
 # Create new list
