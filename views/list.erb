@@ -1,23 +1,26 @@
+<% content_for :header_actions do %>
+<a href='/lists'>All Lists</a>
+<% end %>
+
 <section>
   <header>
     <h2><%= @list[:name] %></h2>
   </header>
-  <ul id='todos'>
-    <% @list[:todos].each do |todo| %>
-    <li>
-      <a>
-        <h2><%= todo[:title] %></h2>
-      </a>
-    </li>
-    <% end %>
-    <% if @add_todo %>
-    <li>
-      Add item...
-    </li>
-    <% end %>
-  </ul>
-
-  <a href='/list/<%= params[:list_idx] %>/add'>Add Todo</a>
 </section>
 
-<a href='/lists'>All Lists</a>
+<ul id='todos'>
+  <% @list[:todos].each do |todo| %>
+  <li>
+    <a>
+      <h2><%= todo[:title] %></h2>
+    </a>
+  </li>
+  <% end %>
+  <% if @add_todo %>
+  <li>
+    Add item...
+  </li>
+  <% end %>
+</ul>
+
+<a href='/list/<%= params[:list_idx] %>/add'>Add Todo</a>
