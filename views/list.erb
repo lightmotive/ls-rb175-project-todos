@@ -4,7 +4,12 @@
 
 <section>
   <header>
+    <% if @edit_list %>
+    <%= list_edit_template %>
+    <% else %>
     <h2><%= @list[:name] %></h2>
+    <% end %>
+    <div class="actions"><a href="/list/<%= @list_id %>/edit">Edit List</a></div>
   </header>
 </section>
 
