@@ -1,4 +1,4 @@
-<form action="/list/<%= params[:list_id] %>" method="post">
+<form action="/lists/<%= params[:list_id] %>" method="post">
   <dl>
     <dt>
       <label for="list_name">Edit list name:</label>
@@ -9,6 +9,6 @@
   </dl>
   <fieldset class="actions">
     <input type="submit" value="Save">
-    <a href="/list/<%= params[:list_id] %>">Cancel</a>
+    <a href="/lists/<%= params[:list_id] %>">Cancel</a>
   </fieldset>
 </form>
