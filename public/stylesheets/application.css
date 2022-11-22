@@ -32,6 +32,7 @@ body>header .actions a {
   -webkit-transition: color 200ms ease;
   -moz-transition: color 200ms ease;
   -o-transition: color 200ms ease;
+  transition: color 200ms ease;
 }
 
 body>header .actions a:hover {
@@ -49,11 +50,13 @@ body>header .actions a.add:before {
   -webkit-transition: transform 200ms linear;
   -moz-transition: transform 200ms linear;
   -o-transition: transform 200ms linear;
+  transition: transform 200ms linear;
 }
 
 body>header .actions a.add:hover:before {
   -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
+  transform: rotate(90deg);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }
 
@@ -110,6 +113,7 @@ form input[type="submit"] {
   -webkit-transition: background-color 200ms ease;
   -moz-transition: background-color 200ms ease;
   -o-transition: background-color 200ms ease;
+  transition: background-color 200ms ease;
 }
 
 form input[type="submit"]:hover {
@@ -122,6 +126,7 @@ form fieldset.actions a {
   -webkit-transition: color 200ms ease;
   -moz-transition: color 200ms ease;
   -o-transition: color 200ms ease;
+  transition: color 200ms ease;
 }
 
 form fieldset.actions a:hover {
@@ -207,7 +212,6 @@ form fieldset.actions a:hover {
 }
 
 #lists p {
-  display: inline-block;
   width: 5%;
   font-size: 0.9em;
   float: right;
@@ -277,6 +281,7 @@ form fieldset.actions a:hover {
   -webkit-transition: background-color 200ms ease;
   -moz-transition: background-color 200ms ease;
   -o-transition: background-color 200ms ease;
+  transition: background-color 200ms ease;
 }
 
 #todos header ul a.edit:hover {
@@ -299,6 +304,7 @@ form fieldset.actions a:hover {
   -webkit-transition: color 200ms ease;
   -moz-transition: color 200ms ease;
   -o-transition: color 200ms ease;
+  transition: color 200ms ease;
 }
 
 #todos header ul button:before {
