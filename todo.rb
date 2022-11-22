@@ -19,7 +19,7 @@ end
 before %r{/lists/(\d+)(?:/?.*)} do
   @list_id = params['captures'].first.to_i
 
-  @list = Lists.new(session)[@list_id]
+  @list = TodoApp::Lists.new(session)[@list_id]
   if @list.nil?
     session[:error] = 'List not found.'
     redirect '/lists'
@@ -32,7 +32,7 @@ end
 
 # Render list of lists
 get '/lists' do
-  @lists = Lists.new(session).all
+  @lists = TodoApp::Lists.new(session).all
   erb :lists
 end
 
@@ -55,43 +55,41 @@ end
 post '/lists' do
   list_name = params[:list_name]
   begin
-    Lists.new(session).create(list_name) do |name_validated|
-      session[:success] = "#{name_validated} created."
-      redirect '/lists'
-    end
-  rescue ValidationError => e
-    session[:error] = e.message
+    list = TodoApp::Lists.new(session).create(list_name)
+    session[:success] = "#{list[:name]} created."
+    redirect '/lists'
+  rescue TodoApp::ValidationErrors => e
+    session[:error] = e.messages_as_html
     erb :list_create
   end
 end
 
 # Update existing list
 post '/lists/:list_id' do
-  Lists.new(session).edit(@list_id.to_i, params[:list_name]) do
-    session[:success] = 'List name updated.'
-    redirect "/lists/#{@list_id}"
-  end
-rescue ValidationError => e
-  session[:error] = e.message
+  TodoApp::Lists.new(session).edit(@list_id.to_i, params[:list_name])
+  session[:success] = 'List name updated.'
+  redirect "/lists/#{@list_id}"
+rescue TodoApp::ValidationErrors => e
+  session[:error] = e.messages_as_html
   erb :list_edit
 end
 
 # Delete list
 post '/lists/:list_id/delete' do
-  Lists.new(session).delete(@list_id.to_i)
+  TodoApp::Lists.new(session).delete(@list_id.to_i)
   session[:success] = "#{@list[:name]} list was deleted."
   redirect '/lists'
-rescue ValidationError => e
-  session[:error] = e.message
+rescue TodoApp::ValidationErrors => e
+  session[:error] = e.messages_as_html
   erb :list_edit
 end
 
 # Add a Todo to a list
 post '/lists/:list_id/todos' do
-  Todos.new(session, @list_id.to_i).create(params[:todo_name])
+  TodoApp::Todos.new(session, @list_id.to_i).create(params[:todo_name])
   session[:success] = 'Todo was added.'
   redirect "/lists/#{@list_id}"
-rescue ValidationError => e
-  session[:error] = e.message
+rescue TodoApp::ValidationErrors => e
+  session[:error] = e.messages_as_html
   erb :list
 end
