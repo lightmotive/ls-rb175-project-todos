@@ -15,7 +15,9 @@ configure do
   # SecureRandom.hex(32)
 end
 
-before '/lists/:list_id*' do
+before %r{/lists/(\d+)(?:/?.*)} do
+  params[:list_id] = params['captures'].first
+
   @list = Lists.new(session)[params[:list_id].to_i]
   if @list.nil?
     session[:error] = 'List not found.'
