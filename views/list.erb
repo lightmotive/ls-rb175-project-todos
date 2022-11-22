@@ -9,17 +9,15 @@
       <li><a class="edit" href="/lists/<%= params[:list_id] %>/edit">Edit List</a></li>
     </ul>
   </header>
-</section>
 
-<ul id='todos'>
-  <% @list[:todos].each do |todo| %>
-  <li>
-    <a>
-      <h2><%= todo[:name] %> - Done: <%= todo[:done] %></h2>
-    </a>
-  </li>
-  <% end %>
-</ul>
+  <ul id='todos'>
+    <% @list[:todos].each_with_index do |todo, todo_idx| %>
+    <li>
+      <h3><%= todo[:name] %> - Done: <%= todo[:done] %></h3>
+    </li>
+    <% end %>
+  </ul>
+</section>
 
 <form action="/lists/<%= params[:list_id] %>/todos" method="post">
   <dl>
