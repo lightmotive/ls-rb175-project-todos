@@ -39,8 +39,6 @@ class Lists
 
   def delete(idx)
     deleted = data.delete_at(idx)
-    p deleted
-    p deleted.methods.sort
     raise ValidationError, "That list doesn't exist." if deleted.nil?
 
     deleted
