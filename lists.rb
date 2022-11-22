@@ -23,22 +23,22 @@ class Lists
     end
   end
 
-  def [](idx)
-    data[idx]
+  def [](id)
+    data[id]
   end
 
-  def edit(idx, name, &validated)
-    list = data[idx]
+  def edit(id, name, &validated)
+    list = data[id]
     raise ValidationError, "That list doesn't exist." if list.nil?
 
-    validate_name_edit(idx, name) do |name_validated|
+    validate_name_edit(id, name) do |name_validated|
       list[:name] = name_validated
       validated.call(name_validated)
     end
   end
 
-  def delete(idx)
-    deleted = data.delete_at(idx)
+  def delete(id)
+    deleted = data.delete_at(id)
     raise ValidationError, "That list doesn't exist." if deleted.nil?
 
     deleted
@@ -74,10 +74,10 @@ class Lists
     end
   end
 
-  def validate_name_edit(idx, name, &validated)
+  def validate_name_edit(id, name, &validated)
     validate_name_all(name) do |name_validated|
       list_names_except_current = list_names
-      list_names_except_current.delete_at(idx)
+      list_names_except_current.delete_at(id)
       if list_names_except_current.include?(name_validated)
         raise ValidationError, 'That list name exists. Please enter a unique name.'
       end
