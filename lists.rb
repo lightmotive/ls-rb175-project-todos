@@ -37,6 +37,15 @@ class Lists
     end
   end
 
+  def delete(idx)
+    deleted = data.delete_at(idx)
+    p deleted
+    p deleted.methods.sort
+    raise ValidationError, "That list doesn't exist." if deleted.nil?
+
+    deleted
+  end
+
   private
 
   attr_reader :session

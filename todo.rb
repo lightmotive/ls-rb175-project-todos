@@ -70,15 +70,21 @@ end
 
 # Update existing list
 post '/lists/:list_id' do
-  list_name = params[:list_name]
-
-  begin
-    Lists.new(session).edit(params[:list_id].to_i, list_name) do
-      session[:success] = 'List name updated.'
-      redirect "/lists/#{params[:list_id]}"
-    end
-  rescue ValidationError => e
-    session[:error] = e.message
-    erb :list_edit
+  Lists.new(session).edit(params[:list_id].to_i, params[:list_name]) do
+    session[:success] = 'List name updated.'
+    redirect "/lists/#{params[:list_id]}"
   end
+rescue ValidationError => e
+  session[:error] = e.message
+  erb :list_edit
+end
+
+# Delete list
+post '/lists/:list_id/delete' do
+  Lists.new(session).delete(params[:list_id].to_i)
+  session[:success] = "#{@list[:name]} list was deleted."
+  redirect '/lists'
+rescue ValidationError => e
+  session[:error] = e.message
+  erb :list_edit
 end
