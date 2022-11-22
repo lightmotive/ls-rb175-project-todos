@@ -15,15 +15,22 @@
   <% @list[:todos].each do |todo| %>
   <li>
     <a>
-      <h2><%= todo[:title] %></h2>
+      <h2><%= todo[:name] %> - Done: <%= todo[:done] %></h2>
     </a>
-  </li>
-  <% end %>
-  <% if @add_todo %>
-  <li>
-    Add item...
   </li>
   <% end %>
 </ul>
 
-<a href='/lists/<%= params[:list_id] %>/add'>Add Todo</a>
+<form action="/lists/<%= params[:list_id] %>/todos" method="post">
+  <dl>
+    <dt>
+      <label for="todo_name">Enter a new todo item:</label>
+    </dt>
+    <dd>
+      <input name="todo_name" id="todo" placeholder="Something to do" type="text" value="<%= params[:todo_name] %>">
+    </dd>
+  </dl>
+  <fieldset class="actions">
+    <input type="submit" value="Add">
+  </fieldset>
+</form>

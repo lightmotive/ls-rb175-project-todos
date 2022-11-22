@@ -2,12 +2,13 @@
 
 require './validation_error'
 require './sanitize_user_input'
+require './todo_app/mocks'
 
 # Session-based Lists Data Access Object.
 class Lists
   include SanitizeUserInput
 
-  def initialize(session = { lists: [] })
+  def initialize(session = TodoApp::Mocks::SESSION)
     @session = session
     session[:lists] ||= []
   end

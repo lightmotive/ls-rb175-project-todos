@@ -5,6 +5,7 @@ require 'sinatra/reloader' if development?
 require 'sinatra/content_for'
 require 'tilt/erubis'
 require './lists'
+require './todos'
 
 configure do
   enable :sessions
@@ -42,12 +43,6 @@ end
 
 # Render list details (Todos)
 get '/lists/:list_id' do
-  erb :list
-end
-
-# Render list with Add Todo form
-get '/lists/:list_id/add' do
-  @add_todo = true
   erb :list
 end
 
@@ -89,4 +84,14 @@ post '/lists/:list_id/delete' do
 rescue ValidationError => e
   session[:error] = e.message
   erb :list_edit
+end
+
+# Add a Todo to a list
+post '/lists/:list_id/todos' do
+  Todos.new(session, params[:list_id].to_i).create(params[:todo_name])
+  session[:success] = 'Todo was added.'
+  redirect "/lists/#{params[:list_id]}"
+rescue ValidationError => e
+  session[:error] = e.message
+  erb :list
 end
