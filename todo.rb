@@ -4,8 +4,8 @@ require 'sinatra'
 require 'sinatra/reloader' if development?
 require 'sinatra/content_for'
 require 'tilt/erubis'
-require './lists'
-require './todos'
+require './todo_app/lists'
+require './todo_app/todos'
 
 configure do
   enable :sessions

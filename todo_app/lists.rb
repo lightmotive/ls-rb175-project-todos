@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require './validation_error'
-require './sanitize_user_input'
+require './todo_app/validation_error'
+require './todo_app/sanitize_user_input'
 require './todo_app/mocks'
 
 # Session-based Lists Data Access Object.
