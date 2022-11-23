@@ -8,7 +8,7 @@ require_relative 'validators/sanitize_web_user_input'
 require_relative 'validators/strip'
 
 module TodoApp
-  # A list of error messages.
+  # Contains a list of error messages.
   class ValidationErrors < StandardError
     def initialize(messages)
       super(messages.join("\n"))
@@ -23,17 +23,18 @@ module TodoApp
     end
   end
 
-  # Validate a value using a list of validators.
+  # Validate a value using a list of `Validator`-derived objects.
   # `#do(value, [*validator])` - each `validator` must:
   # - Have a `validate` method that:
   #   - Returns a validated value.
   #   - OR raises `ValidationError`.
   # - AND be one of the following:
-  #   - A class that can be initialized with no arguments.
+  #   - A class that can be initialized with no arguments (`element.is_a?(Class)`).
   #   - A class instance.
   class ValidateAll
     # Run all validators.
-    # - If no exceptions, this returns the final validated value.
+    # - If no exceptions, this returns the validated value. `validators` can
+    #   sequentially mutate `value`.
     # - Otherwise, this will raise a ValidationErrors exception that contains
     #   all error messages.
     def self.do(value, validators)
