@@ -46,6 +46,8 @@ module TodoApp
         value = validator.validate(value)
       rescue Validators::ValidationError => e
         errors << e
+        break if validator.respond_to?(:skip_subsequent_validations_after_exception?) \
+                 && validator.skip_subsequent_validations_after_exception?
       end
       raise ValidationErrors, errors.map(&:message) unless errors.empty?
 
