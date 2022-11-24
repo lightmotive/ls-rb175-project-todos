@@ -19,13 +19,14 @@ end
 before %r{/lists/(\d+)(?:/?.*)} do
   @list_id = params['captures'].first.to_i
 
-  failure_messages = catch(:failure) do
-    @list = TodoApp::Lists.new(session)[@list_id]
-    return
-  end
-
-  session[:error] = failure_messages.as_html
-  redirect '/lists'
+  Steps.process(
+    action: proc { TodoApp::Lists.new(session)[@list_id] },
+    on_success: proc { |list| @list = list },
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      redirect '/lists'
+    end
+  )
 end
 
 get '/' do
@@ -55,49 +56,60 @@ end
 
 # Create new list
 post '/lists' do
-  list_name = params[:list_name]
-  failure_messages = catch(:failure) do
-    list = TodoApp::Lists.new(session).create(list_name)
-    session[:success] = "#{list[:name]} created."
-    return redirect '/lists'
-  end
-
-  session[:error] = failure_messages.as_html
-  erb :list_create
+  Steps.process(
+    action: proc { TodoApp::Lists.new(session).create(params[:list_name]) },
+    on_success: proc do |list|
+      session[:success] = "#{list[:name]} created."
+      redirect '/lists'
+    end,
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      erb :list_create
+    end
+  )
 end
 
 # Update existing list
 post '/lists/:list_id' do
-  failure_messages = catch(:failure) do
-    TodoApp::Lists.new(session).edit(@list_id.to_i, params[:list_name])
-    session[:success] = 'List name updated.'
-    return redirect "/lists/#{@list_id}"
-  end
-
-  session[:error] = failure_messages.as_html
-  erb :list_edit
+  Steps.process(
+    action: proc { TodoApp::Lists.new(session).edit(@list_id.to_i, params[:list_name]) },
+    on_success: proc do |_list|
+      session[:success] = 'List name updated.'
+      redirect "/lists/#{@list_id}"
+    end,
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      erb :list_edit
+    end
+  )
 end
 
 # Delete list
 post '/lists/:list_id/delete' do
-  failure_messages = catch(:failure) do
-    TodoApp::Lists.new(session).delete(@list_id.to_i)
-    session[:success] = "#{@list[:name]} list was deleted."
-    return redirect '/lists'
-  end
-
-  session[:error] = failure_messages.as_html
-  erb :list_edit
+  Steps.process(
+    action: proc { TodoApp::Lists.new(session).delete(@list_id.to_i) },
+    on_success: proc do |_list|
+      session[:success] = "#{@list[:name]} list was deleted."
+      redirect '/lists'
+    end,
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      erb :list_edit
+    end
+  )
 end
 
 # Add a Todo to a list
 post '/lists/:list_id/todos' do
-  failure_messages = catch(:failure) do
-    TodoApp::Todos.new(session, @list_id.to_i).create(params[:todo_name])
-    session[:success] = 'Todo was added.'
-    return redirect "/lists/#{@list_id}"
-  end
-
-  session[:error] = failure_messages.as_html
-  erb :list
+  Steps.process(
+    action: proc { TodoApp::Todos.new(session, @list_id.to_i).create(params[:todo_name]) },
+    on_success: proc do |_list|
+      session[:success] = 'Todo was added.'
+      redirect "/lists/#{@list_id}"
+    end,
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      erb :list
+    end
+  )
 end

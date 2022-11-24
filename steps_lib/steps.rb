@@ -22,4 +22,22 @@ module Steps
     one_step_sequence = Sequence.new([custom_step])
     one_step_sequence.process(object)
   end
+
+  # Helper method for intuitive Steps handling: execute action,
+  # then handle success or failure.
+  # - `action: proc {  }`: An action that:
+  #   - On success: return an object.
+  #   - On failure: `throw(:failure, Steps::Messages)`.
+  #   - `Steps::Sequence#process` meets those requirements.
+  # - `on_success: proc { |action_proc_return_object| ... }`: invoked when
+  #   `action.call` does not result in `throw(:failure)`.
+  # - `on_failure: proc { |Steps::Messages| ... }`: invoked when `action.call`
+  #   results in `throw(:failure)`.
+  def self.process(action:, on_success:, on_failure:)
+    failure_messages = catch(:failure) do
+      return on_success.call(action.call)
+    end
+
+    on_failure.call(failure_messages)
+  end
 end
