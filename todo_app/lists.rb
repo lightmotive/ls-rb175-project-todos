@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'validate_all'
 require_relative 'mocks'
+require './steps_lib/steps'
 
 module TodoApp
   # Session-based Lists Data Access Object.
@@ -26,10 +26,9 @@ module TodoApp
     end
 
     def [](id)
-      list = data[id]
-      raise ValidationError, "That list doesn't exist." if list.nil?
-
-      list
+      Steps.one_step_process(data[id]) do |list, step|
+        list.nil? ? step.throw_failure("That list doesn't exist.") : list
+      end
     end
 
     def edit(id, name)
@@ -61,16 +60,15 @@ module TodoApp
     end
 
     def validate_name(name, id: nil)
-      ValidateAll.do(
-        name,
-        [Validators::SanitizeWebUserInput,
-         Validators::Strip,
-         Validators::Length.new(1, 100, value_name: 'Name'),
-         Validators::NotInCollection.new(
+      Steps::Sequence.new(
+        [Steps::Common::SanitizeWebUserInput,
+         Steps::Common::Strip,
+         Steps::Common::EnsureLengthBetween.new(1, 100, value_name: 'Name'),
+         Steps::Common::EnsureNotInCollection.new(
            id ? list_names_except(id) : list_names,
            'That list name exists. Please enter a unique name.'
          )]
-      )
+      ).process(name)
     end
   end
 end
