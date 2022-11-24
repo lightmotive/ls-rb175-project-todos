@@ -16,7 +16,7 @@ configure do
   # SecureRandom.hex(32)
 end
 
-before %r{/lists/(\d+)(?:/?.*)} do
+before %r{/lists/(-?\d+)(?:/?.*)} do
   @list_id = params['captures'].first.to_i
 
   Steps.process(
