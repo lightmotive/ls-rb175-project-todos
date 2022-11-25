@@ -146,10 +146,12 @@ end
 
 # Toggle Todo "done" status (check/mark)
 post '/lists/:list_id/todos/:todo_id/check' do
-  is_done = (params['done'] == 'true')
-
   Steps.process(
-    action: proc { TodoApp::Todos.new(session, @list_id).mark(@todo_id, !is_done) },
+    action: proc do
+              TodoApp::Todos.new(session, @list_id).mark(
+                @todo_id, (params['done'] == 'true')
+              )
+            end,
     on_success: proc do |_todo|
       redirect "/lists/#{@list_id}"
     end,
