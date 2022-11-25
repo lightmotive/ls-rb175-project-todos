@@ -16,15 +16,30 @@ configure do
   # SecureRandom.hex(32)
 end
 
+# Validate list ID and retrieve list
 before %r{/lists/(-?\d+)(?:/?.*)} do
   @list_id = params['captures'].first.to_i
 
-  Steps.process(
+  @list = Steps.process(
     action: proc { TodoApp::Lists.new(session)[@list_id] },
-    on_success: proc { |list| @list = list },
+    on_success: proc { |list| list },
     on_failure: proc do |messages|
       session[:error] = messages.as_html
       redirect '/lists'
+    end
+  )
+end
+
+# Validate todo ID and retrieve todo
+before %r{/lists/(?:-?\d+)/todos/(-?\d+)(?:/?.*)} do
+  @todo_id = params['captures'].first.to_i
+
+  @todo = Steps.process(
+    action: proc { TodoApp::Todos.new(session, @list_id)[@todo_id] },
+    on_success: proc { |todo| todo },
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      redirect "/lists/#{@list_id}"
     end
   )
 end
@@ -72,7 +87,7 @@ end
 # Update existing list
 post '/lists/:list_id' do
   Steps.process(
-    action: proc { TodoApp::Lists.new(session).edit(@list_id.to_i, params[:list_name]) },
+    action: proc { TodoApp::Lists.new(session).edit(@list_id, params[:list_name]) },
     on_success: proc do |_list|
       session[:success] = 'List name updated.'
       redirect "/lists/#{@list_id}"
@@ -87,9 +102,9 @@ end
 # Delete list
 post '/lists/:list_id/delete' do
   Steps.process(
-    action: proc { TodoApp::Lists.new(session).delete(@list_id.to_i) },
-    on_success: proc do |_list|
-      session[:success] = "#{@list[:name]} list was deleted."
+    action: proc { TodoApp::Lists.new(session).delete(@list_id) },
+    on_success: proc do |list|
+      session[:success] = "#{list[:name]} list was deleted."
       redirect '/lists'
     end,
     on_failure: proc do |messages|
@@ -102,9 +117,38 @@ end
 # Add a Todo to a list
 post '/lists/:list_id/todos' do
   Steps.process(
-    action: proc { TodoApp::Todos.new(session, @list_id.to_i).create(params[:todo_name]) },
+    action: proc { TodoApp::Todos.new(session, @list_id).create(params[:todo_name]) },
     on_success: proc do |_list|
       session[:success] = 'Todo was added.'
+      redirect "/lists/#{@list_id}"
+    end,
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      erb :list
+    end
+  )
+end
+
+# Delete Todo from a list
+post '/lists/:list_id/todos/:todo_id/delete' do
+  Steps.process(
+    action: proc { TodoApp::Todos.new(session, @list_id).delete(@todo_id) },
+    on_success: proc do |_todo|
+      session[:success] = 'Todo was deleted.'
+      redirect "/lists/#{@list_id}"
+    end,
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      erb :list
+    end
+  )
+end
+
+# Toggle Todo "done" status (check/mark)
+post '/lists/:list_id/todos/:todo_id/check' do
+  Steps.process(
+    action: proc { TodoApp::Todos.new(session, @list_id).mark_toggle(@todo_id) },
+    on_success: proc do |_todo|
       redirect "/lists/#{@list_id}"
     end,
     on_failure: proc do |messages|

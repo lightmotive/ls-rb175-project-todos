@@ -41,6 +41,10 @@ module TodoApp
       self[id][:done] = is_done
     end
 
+    def mark_toggle(id)
+      mark(id, !self[id][:done])
+    end
+
     def delete(id)
       data.delete_at(id) if self[id]
     end
