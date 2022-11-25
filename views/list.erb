@@ -12,12 +12,12 @@
 
   <ul>
     <% @list[:todos].each_with_index do |todo, todo_id| %>
-    <li>
+    <li <%= todo[:done] ? 'class="complete"' : '' %>>
       <form action="/lists/<%= @list_id %>/todos/<%= todo_id %>/check" method="post" class="check">
-          <input type="hidden" name="completed" value="true">
-          <button type="submit">Complete</button>
-        </form>
-      <h3><%= todo[:name] %> - Done: <%= todo[:done] %></h3>
+        <input type="hidden" name="done" value="<%= todo[:done] %>">
+        <button type="submit">Done</button>
+      </form>
+      <h3><%= todo[:name] %></h3>
       <form action="/lists/<%= @list_id %>/todos/<%= todo_id %>/delete" method="post" class="delete">
         <button type="submit">Delete</button>
       </form>
