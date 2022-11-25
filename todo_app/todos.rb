@@ -33,12 +33,12 @@ module TodoApp
       todo
     end
 
-    def mark(id, is_done)
-      # unless is_done.is_a?(TrueClass) || is_done.is_a?(FalseClass)
-      #   raise ArgumentError, 'Second argument must be true or false.'
-      # end
+    def mark(id, done:)
+      unless done.is_a?(TrueClass) || done.is_a?(FalseClass)
+        raise ArgumentError, 'Second argument must be a boolean value.'
+      end
 
-      self[id][:done] = is_done
+      self[id][:done] = done
     end
 
     def delete(id)
