@@ -44,6 +44,16 @@ before %r{/lists/(?:-?\d+)/todos/(-?\d+)(?:/?.*)} do
   )
 end
 
+helpers do
+  def todos_count_all(list_id)
+    TodoApp::Todos.new(session, list_id).count
+  end
+
+  def todos_count_not_done(list_id)
+    TodoApp::Todos.new(session, list_id).count_not_done
+  end
+end
+
 get '/' do
   redirect '/lists'
 end
@@ -110,6 +120,21 @@ post '/lists/:list_id/delete' do
     on_failure: proc do |messages|
       session[:error] = messages.as_html
       erb :list_edit
+    end
+  )
+end
+
+# Mark complete all todos on a list
+post '/lists/:list_id/complete' do
+  Steps.process(
+    action: proc { TodoApp::Lists.new(session).set_todos_done(@list_id, true) },
+    on_success: proc do |list|
+      session[:success] = "#{list[:name]} list was completed."
+      redirect "/lists/#{@list_id}"
+    end,
+    on_failure: proc do |messages|
+      session[:error] = messages.as_html
+      erb :list
     end
   )
 end

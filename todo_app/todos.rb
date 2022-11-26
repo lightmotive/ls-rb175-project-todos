@@ -45,6 +45,14 @@ module TodoApp
       data.delete_at(id) if self[id]
     end
 
+    def count
+      data.size
+    end
+
+    def count_not_done
+      data.count { |todo| !todo[:done] }
+    end
+
     private
 
     attr_reader :session, :list_id

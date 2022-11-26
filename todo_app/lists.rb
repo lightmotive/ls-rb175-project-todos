@@ -37,6 +37,13 @@ module TodoApp
       list
     end
 
+    def set_todos_done(id, done)
+      list = self[id]
+      todos = list[:todos]
+      todos.each { |todo| todo[:done] = done }
+      list
+    end
+
     def delete(id)
       data.delete_at(id) if self[id]
     end
