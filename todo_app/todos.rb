@@ -49,8 +49,8 @@ module TodoApp
       data.size
     end
 
-    def count_not_done
-      data.count { |todo| !todo[:done] }
+    def count_by_done(is_done)
+      data.count { |todo| todo[:done] == is_done }
     end
 
     private

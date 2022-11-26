@@ -16,6 +16,48 @@ configure do
   # SecureRandom.hex(32)
 end
 
+helpers do
+  # TODO: refactor the following helper logic to a module to be included here
+  # (`helpers TodoApp::Helpers::ListHelpers`).
+  # - That's important to minimize multiple "queries against a database" during
+  #   rendering; good conceptual practice for production implementations.
+  # - Instead of passing list id to methods below, pass a list object
+  #   (includes todos). Then:
+  #   - Views can pass a list object to helper method.
+  #   - Reuse the logic in Lists and Todos where already implemented as follows:
+  #     1. Require the module in the class file.
+  #     2. Implement appropriately named methods with list_id param.
+  #     3. Retrieve the list by ID, then pass the list to the associated module
+  #        method. Return the module method's value.
+  def todos_count(list_id)
+    TodoApp::Todos.new(session, list_id).count
+  end
+
+  def todos_count_by_done(list_id:, done:)
+    TodoApp::Todos.new(session, list_id).count_by_done(done)
+  end
+
+  def list_has_todos(list_id)
+    todos_count(list_id).positive?
+  end
+
+  def list_complete?(list_id)
+    todos_count_not_done = todos_count_by_done(list_id: list_id, done: false)
+    list_has_todos(list_id) && todos_count_not_done.zero?
+  end
+
+  def list_completable?(list_id)
+    return false unless list_has_todos(list_id)
+
+    todos_count_not_done = todos_count_by_done(list_id: list_id, done: false)
+    todos_count_not_done.positive?
+  end
+
+  def list_class(list_id)
+    'complete' if list_complete?(list_id)
+  end
+end
+
 # Validate list ID and retrieve list
 before %r{/lists/(-?\d+)(?:/?.*)} do
   @list_id = params['captures'].first.to_i
@@ -42,16 +84,6 @@ before %r{/lists/(?:-?\d+)/todos/(-?\d+)(?:/?.*)} do
       redirect "/lists/#{@list_id}"
     end
   )
-end
-
-helpers do
-  def todos_count_all(list_id)
-    TodoApp::Todos.new(session, list_id).count
-  end
-
-  def todos_count_not_done(list_id)
-    TodoApp::Todos.new(session, list_id).count_not_done
-  end
 end
 
 get '/' do

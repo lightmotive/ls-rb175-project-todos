@@ -2,11 +2,11 @@
 <a class="list" href='/lists'>All Lists</a>
 <% end %>
 
-<section id="todos">
+<section id="todos" class="<%= list_class(@list_id) %>">
   <header>
     <h2><%= @list[:name] %></h2>
     <ul>
-      <% if todos_count_not_done(@list_id) > 0 %>
+      <% if list_completable?(@list_id) %>
       <li>
         <form action="/lists/<%= @list_id %>/complete" method="post">
           <button type="submit" class="check">Complete All</button>
