@@ -4,10 +4,10 @@
 
 <ul id='lists'>
   <% @lists.each_with_index do |list, list_id| %>
-  <li class="<%= list_class(list_id) %>">
+  <li class="<%= list_container_css_class(list) %>">
     <a href='/lists/<%= list_id %>'>
       <h2><%= list[:name] %></h2>
-      <p><%= todos_count_by_done(list_id: list_id, done: true) %> / <%= todos_count(list_id) %></p>
+      <p><%= list_todos_count_by_done(list: list, is_done: true) %> / <%= list_todos_count(list) %></p>
     </a>
   </li>
   <% end %>
