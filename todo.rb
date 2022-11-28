@@ -8,6 +8,8 @@ require 'tilt/erubis'
 require './todo_app/lists'
 require './todo_app/todos'
 require './todo_app/view_helpers/list'
+require './todo_app/view_helpers/lists'
+require './todo_app/view_helpers/todos'
 
 configure do
   enable :sessions
@@ -18,7 +20,7 @@ configure do
   # SecureRandom.hex(32)
 end
 
-helpers TodoApp::ViewHelpers::List
+helpers TodoApp::ViewHelpers::List, TodoApp::ViewHelpers::Lists
 
 get '/' do
   redirect '/lists'
@@ -52,6 +54,8 @@ end
 
 # Specific List
 namespace %r{/lists/(?<list_id>-?\d+)} do
+  helpers TodoApp::ViewHelpers::Todos
+
   # Validate list ID and retrieve list
   before do
     @list_id = params[:list_id].to_i

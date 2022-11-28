@@ -18,7 +18,7 @@
   </header>
 
   <ul>
-    <% @list[:todos].each_with_index do |todo, todo_id| %>
+    <% todos_sorted_enum(@list[:todos]) do |todo, todo_id| %>
     <li <%= todo[:done] ? 'class="complete"' : '' %>>
       <form action="/lists/<%= @list_id %>/todos/<%= todo_id %>/check" method="post" class="check">
         <input type="hidden" name="done" value="<%= !todo[:done] %>">
