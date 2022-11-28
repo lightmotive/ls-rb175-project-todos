@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
 require_relative 'step'
-require_relative 'message'
+require_relative 'event'
 
 module Steps
   # Defer object processing to block.
   class Custom < Step
     # Provide a block that receives 2 params when step is executed: object, step
     # - Block must do one of the following:
-    #   - Invoke `step.throw_failure(message)` or `throw(:step_failure, Steps::Message)`.
+    #   - Invoke one:
+    #     - `step.throw_failure(message_string)`
+    #     - `throw(:step_failure, Steps::Event.new(message_string[, abort_sequence: true]))`.
     #   - Return processed object.
     def initialize(&step_logic)
       super()

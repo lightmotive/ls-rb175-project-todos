@@ -45,8 +45,8 @@ post '/lists' do
       session[:success] = "#{list[:name]} created."
       redirect '/lists'
     end,
-    on_failure: proc do |messages|
-      session[:error] = messages.as_html
+    on_failure: proc do |events|
+      session[:error] = events.as_html
       erb :list_create
     end
   )
@@ -63,8 +63,8 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
     @list = Steps.process(
       action: proc { TodoApp::Lists.new(session)[@list_id] },
       on_success: proc { |list| list },
-      on_failure: proc do |messages|
-        session[:error] = messages.as_html
+      on_failure: proc do |events|
+        session[:error] = events.as_html
         redirect '/lists'
       end
     )
@@ -88,8 +88,8 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
         session[:success] = 'List name updated.'
         redirect "/lists/#{@list_id}"
       end,
-      on_failure: proc do |messages|
-        session[:error] = messages.as_html
+      on_failure: proc do |events|
+        session[:error] = events.as_html
         erb :list_edit
       end
     )
@@ -103,8 +103,8 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
         session[:success] = "#{list[:name]} list was deleted."
         redirect '/lists'
       end,
-      on_failure: proc do |messages|
-        session[:error] = messages.as_html
+      on_failure: proc do |events|
+        session[:error] = events.as_html
         erb :list_edit
       end
     )
@@ -118,8 +118,8 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
         session[:success] = "#{list[:name]} list was completed."
         redirect "/lists/#{@list_id}"
       end,
-      on_failure: proc do |messages|
-        session[:error] = messages.as_html
+      on_failure: proc do |events|
+        session[:error] = events.as_html
         erb :list
       end
     )
@@ -133,8 +133,8 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
         session[:success] = 'Todo was added.'
         redirect "/lists/#{@list_id}"
       end,
-      on_failure: proc do |messages|
-        session[:error] = messages.as_html
+      on_failure: proc do |events|
+        session[:error] = events.as_html
         erb :list
       end
     )
@@ -149,8 +149,8 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
       @todo = Steps.process(
         action: proc { TodoApp::Todos.new(session, @list_id)[@todo_id] },
         on_success: proc { |todo| todo },
-        on_failure: proc do |messages|
-          session[:error] = messages.as_html
+        on_failure: proc do |events|
+          session[:error] = events.as_html
           redirect "/lists/#{@list_id}"
         end
       )
@@ -164,8 +164,8 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
           session[:success] = 'Todo was deleted.'
           redirect "/lists/#{@list_id}"
         end,
-        on_failure: proc do |messages|
-          session[:error] = messages.as_html
+        on_failure: proc do |events|
+          session[:error] = events.as_html
           erb :list
         end
       )
@@ -179,8 +179,8 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
         on_success: proc do |_todo|
           redirect "/lists/#{@list_id}"
         end,
-        on_failure: proc do |messages|
-          session[:error] = messages.as_html
+        on_failure: proc do |events|
+          session[:error] = events.as_html
           erb :list
         end
       )

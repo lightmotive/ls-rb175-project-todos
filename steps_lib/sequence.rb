@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'messages'
+require_relative 'events'
 
 module Steps
   # Sequentially process an object using an enumerable collection of
@@ -12,22 +12,22 @@ module Steps
   #   - A class instance.
   # - AND have a `process` method that:
   #   - Returns the object after processing.
-  #   - OR `throw(:step_failure, Message)`.
+  #   - OR `throw(:step_failure, Event)`.
   # `#process(object)` - return object after processing through steps.
   class Sequence
     def initialize(steps)
       raise StandardError, 'Initialize with an array containing at least 1 step.' if steps.empty?
 
       @steps = steps
-      @failure_messages = []
+      @failure_events = []
     end
 
     # Sequentially process object through steps in order provided during class init.
     # - Returns the processed object if no step throws `:step_failure`.
-    # - Otherwise, will `throw(:failure, Messages instance)`.
-    #   `Messages` instance contains messages explaining what failed.
+    # - Otherwise, will `throw(:failure, Events instance)`.
+    #   `Events` instance contains events that explaining what failed.
     def process(object)
-      @failure_messages = []
+      @failure_events = []
 
       @steps.each do |step|
         break if catch(:abort_sequence) do
@@ -36,7 +36,7 @@ module Steps
                  end
       end
 
-      @failure_messages.empty? ? object : throw(:failure, Messages.new(@failure_messages))
+      @failure_events.empty? ? object : throw(:failure, Events.new(@failure_events))
     end
 
     private
@@ -48,15 +48,15 @@ module Steps
     end
 
     def execute_step(object, step)
-      message = catch(:step_failure) do
+      event = catch(:step_failure) do
         return step.process(object)
       end
-      process_failure(message)
+      process_failure(event)
     end
 
-    def process_failure(message)
-      @failure_messages << message
-      throw(:abort_sequence, true) if message.abort_sequence?
+    def process_failure(event)
+      @failure_events << event
+      throw(:abort_sequence, true) if event.abort_sequence?
     end
   end
 end
