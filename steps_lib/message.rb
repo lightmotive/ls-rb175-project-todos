@@ -2,12 +2,12 @@
 
 module Steps
   class Message
-    attr_accessor :skip_remaining_steps
-    alias skip_remaining_steps? skip_remaining_steps
+    attr_accessor :abort_sequence
+    alias abort_sequence? abort_sequence
 
-    def initialize(message, skip_remaining_steps: false)
+    def initialize(message, abort_sequence: false)
       @message = message
-      @skip_remaining_steps = skip_remaining_steps
+      @abort_sequence = abort_sequence
     end
 
     def text

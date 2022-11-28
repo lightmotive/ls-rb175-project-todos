@@ -11,9 +11,9 @@ module Steps
       throw(:step_failure, message)
     end
 
-    def throw_failure_and_skip_remaining_steps(message)
+    def throw_failure_and_abort_sequence(message)
       message = Message.new(message) if message.is_a?(String)
-      message.skip_remaining_steps = true
+      message.abort_sequence = true
 
       throw(:step_failure, message)
     end

@@ -30,7 +30,7 @@ module Steps
       @failure_messages = []
 
       @steps.each do |step|
-        break if catch(:skip_remaining_steps) do
+        break if catch(:abort_sequence) do
                    object = execute_step(object, initialize_step(step))
                    false
                  end
@@ -56,7 +56,7 @@ module Steps
 
     def process_failure(message)
       @failure_messages << message
-      throw(:skip_remaining_steps, true) if message.skip_remaining_steps?
+      throw(:abort_sequence, true) if message.abort_sequence?
     end
   end
 end
