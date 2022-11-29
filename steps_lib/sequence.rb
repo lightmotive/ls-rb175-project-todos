@@ -6,7 +6,7 @@ module Steps
   # Sequentially process an object using an enumerable collection of
   # `Step`-derived objects.
   #
-  # `::new([step])` - each `step` element must:
+  # `::new(enumerable_of_step)` - each `step` element must:
   # - Be one of the following:
   #   - A class that can be initialized with no arguments (`element.is_a?(Class)`).
   #   - A class instance.

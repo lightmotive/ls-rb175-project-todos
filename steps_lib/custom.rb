@@ -9,7 +9,7 @@ module Steps
     # Provide a block that receives 2 params when step is executed: object, step
     # - Block must do one of the following:
     #   - Invoke one:
-    #     - `step.throw_failure(message_string)`
+    #     - `Step#throw_failure(message_string)`
     #     - `throw(:step_failure, Steps::Event.new(message_string[, abort_sequence: true]))`.
     #   - Return processed object.
     def initialize(&step_logic)
