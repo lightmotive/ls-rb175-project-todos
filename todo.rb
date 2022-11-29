@@ -38,7 +38,7 @@ get '/lists/create' do
 end
 
 # Create new list
-post '/lists' do
+post '/lists/create' do
   Steps.process(
     action: proc { TodoApp::Lists.new(session).create(params[:list_name]) },
     on_success: proc do |list|
@@ -81,7 +81,7 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
   end
 
   # Update existing list
-  post do
+  post '/edit' do
     Steps.process(
       action: proc { TodoApp::Lists.new(session).edit(@list_id, params[:list_name]) },
       on_success: proc do |_list|
@@ -126,7 +126,7 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
   end
 
   # Add a Todo to a list
-  post '/todos' do
+  post do
     Steps.process(
       action: proc { TodoApp::Todos.new(session, @list_id).create(params[:todo_name]) },
       on_success: proc do |_list|
