@@ -26,142 +26,107 @@ get '/' do
   redirect '/lists'
 end
 
-# Render list of lists
-get '/lists' do
-  @lists = TodoApp::Lists.new(session).all
-  erb :lists
-end
-
-# Render New List form
-get '/lists/create' do
-  erb :list_create
-end
-
-# Create new list
-post '/lists/create' do
-  Steps.process(
-    action: proc { TodoApp::Lists.new(session).create(params[:list_name]) },
-    on_success: proc do |list|
-      session[:success] = "#{list[:name]} created."
-      redirect '/lists'
-    end,
-    on_failure: proc do |events|
-      session[:error] = events.as_html
-      erb :list_create
-    end
-  )
-end
-
-# Specific List
-namespace %r{/lists/(?<list_id>-?\d+)} do
-  helpers TodoApp::ViewHelpers::Todos
-
-  # Validate list ID and retrieve list
-  before do
-    @list_id = params[:list_id].to_i
-
-    @list = Steps.process(
-      action: proc { TodoApp::Lists.new(session)[@list_id] },
-      on_success: proc { |list| list },
-      on_failure: proc do |events|
-        session[:error] = events.as_html
-        redirect '/lists'
-      end
-    )
-  end
-
-  # Render list details (Todos)
+namespace '/lists' do
+  # Render list of lists
+  # get '/lists'
   get do
-    erb :list
+    @lists = TodoApp::Lists.new(session).all
+    erb :lists
   end
 
-  # Render list edit form
-  get '/edit' do
-    erb :list_edit
+  # Render New List form
+  # get '/lists/create'
+  get '/create' do
+    erb :list_create
   end
 
-  # Update existing list
-  post '/edit' do
+  # Create new list
+  # post '/lists/create'
+  post '/create' do
     Steps.process(
-      action: proc { TodoApp::Lists.new(session).edit(@list_id, params[:list_name]) },
-      on_success: proc do |_list|
-        session[:success] = 'List name updated.'
-        redirect "/lists/#{@list_id}"
-      end,
-      on_failure: proc do |events|
-        session[:error] = events.as_html
-        erb :list_edit
-      end
-    )
-  end
-
-  # Delete list
-  post '/delete' do
-    Steps.process(
-      action: proc { TodoApp::Lists.new(session).delete(@list_id) },
+      action: proc { TodoApp::Lists.new(session).create(params[:list_name]) },
       on_success: proc do |list|
-        session[:success] = "#{list[:name]} list was deleted."
+        session[:success] = "#{list[:name]} created."
         redirect '/lists'
       end,
       on_failure: proc do |events|
         session[:error] = events.as_html
-        erb :list_edit
+        erb :list_create
       end
     )
   end
 
-  # Set all todos to done
-  post '/complete' do
-    Steps.process(
-      action: proc { TodoApp::Lists.new(session).set_todos_done(@list_id, true) },
-      on_success: proc do |list|
-        session[:success] = "#{list[:name]} list was completed."
-        redirect "/lists/#{@list_id}"
-      end,
-      on_failure: proc do |events|
-        session[:error] = events.as_html
-        erb :list
-      end
-    )
-  end
+  # Specific List
+  # namespace '/lists/:list_id'
+  namespace %r{/(?<list_id>-?\d+)} do
+    helpers TodoApp::ViewHelpers::Todos
 
-  # Add a Todo to a list
-  post do
-    Steps.process(
-      action: proc { TodoApp::Todos.new(session, @list_id).create(params[:todo_name]) },
-      on_success: proc do |_list|
-        session[:success] = 'Todo was added.'
-        redirect "/lists/#{@list_id}"
-      end,
-      on_failure: proc do |events|
-        session[:error] = events.as_html
-        erb :list
-      end
-    )
-  end
-
-  # Specific Todo in a list (nested within namespace: %r{/lists/(-?\d+)})
-  namespace %r{/todos/(?<todo_id>-?\d+)} do
-    # Validate todo ID and retrieve todo
+    # Validate list ID and retrieve list
+    # before '/lists/:list_id'
     before do
-      @todo_id = params[:todo_id].to_i
+      @list_id = params[:list_id].to_i
 
-      @todo = Steps.process(
-        action: proc { TodoApp::Todos.new(session, @list_id)[@todo_id] },
-        on_success: proc { |todo| todo },
+      @list = Steps.process(
+        action: proc { TodoApp::Lists.new(session)[@list_id] },
+        on_success: proc { |list| list },
         on_failure: proc do |events|
           session[:error] = events.as_html
-          redirect "/lists/#{@list_id}"
+          redirect '/lists'
         end
       )
     end
 
-    # Delete Todo from a list
+    # Render list details (Todos)
+    # get '/lists/:list_id'
+    get do
+      erb :list
+    end
+
+    # Render list edit form
+    # get '/lists/:list_id/edit'
+    get '/edit' do
+      erb :list_edit
+    end
+
+    # Update existing list
+    # post '/lists/:list_id/edit'
+    post '/edit' do
+      Steps.process(
+        action: proc { TodoApp::Lists.new(session).edit(@list_id, params[:list_name]) },
+        on_success: proc do |_list|
+          session[:success] = 'List name updated.'
+          redirect "/lists/#{@list_id}"
+        end,
+        on_failure: proc do |events|
+          session[:error] = events.as_html
+          erb :list_edit
+        end
+      )
+    end
+
+    # Delete list
+    # post '/lists/:list_id/delete'
     post '/delete' do
       Steps.process(
-        action: proc { TodoApp::Todos.new(session, @list_id).delete(@todo_id) },
-        on_success: proc do |_todo|
-          session[:success] = 'Todo was deleted.'
+        action: proc { TodoApp::Lists.new(session).delete(@list_id) },
+        on_success: proc do |list|
+          session[:success] = "#{list[:name]} list was deleted."
+          redirect '/lists'
+        end,
+        on_failure: proc do |events|
+          session[:error] = events.as_html
+          erb :list_edit
+        end
+      )
+    end
+
+    # Set all todos to done
+    # post '/lists/:list_id/complete'
+    post '/complete' do
+      Steps.process(
+        action: proc { TodoApp::Lists.new(session).set_todos_done(@list_id, true) },
+        on_success: proc do |list|
+          session[:success] = "#{list[:name]} list was completed."
           redirect "/lists/#{@list_id}"
         end,
         on_failure: proc do |events|
@@ -171,12 +136,13 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
       )
     end
 
-    # Toggle Todo "done" status (check/mark)
-    post '/check' do
-      mark_value = (params['done'] == 'true')
+    # Add a Todo to a list
+    # post '/lists/:list_id'
+    post do
       Steps.process(
-        action: proc { TodoApp::Todos.new(session, @list_id).mark(@todo_id, done: mark_value) },
-        on_success: proc do |_todo|
+        action: proc { TodoApp::Todos.new(session, @list_id).create(params[:todo_name]) },
+        on_success: proc do |_list|
+          session[:success] = 'Todo was added.'
           redirect "/lists/#{@list_id}"
         end,
         on_failure: proc do |events|
@@ -184,6 +150,57 @@ namespace %r{/lists/(?<list_id>-?\d+)} do
           erb :list
         end
       )
+    end
+
+    # Specific Todo in a list (nested within namespace: %r{/lists/(-?\d+)})
+    # namespace '/lists/:list_id/todos/:todo_id'
+    namespace %r{/todos/(?<todo_id>-?\d+)} do
+      # Validate todo ID and retrieve todo
+      # before '/lists/:list_id/todos/:todo_id'
+      before do
+        @todo_id = params[:todo_id].to_i
+
+        @todo = Steps.process(
+          action: proc { TodoApp::Todos.new(session, @list_id)[@todo_id] },
+          on_success: proc { |todo| todo },
+          on_failure: proc do |events|
+            session[:error] = events.as_html
+            redirect "/#{@list_id}"
+          end
+        )
+      end
+
+      # Delete Todo from a list
+      # post '/lists/:list_id/todos/:todo_id/delete'
+      post '/delete' do
+        Steps.process(
+          action: proc { TodoApp::Todos.new(session, @list_id).delete(@todo_id) },
+          on_success: proc do |_todo|
+            session[:success] = 'Todo was deleted.'
+            redirect "/lists/#{@list_id}"
+          end,
+          on_failure: proc do |events|
+            session[:error] = events.as_html
+            erb :list
+          end
+        )
+      end
+
+      # Toggle Todo "done" status (check/mark)
+      # post '/lists/:list_id/todos/:todo_id/check'
+      post '/check' do
+        mark_value = (params['done'] == 'true')
+        Steps.process(
+          action: proc { TodoApp::Todos.new(session, @list_id).mark(@todo_id, done: mark_value) },
+          on_success: proc do |_todo|
+            redirect "/lists/#{@list_id}"
+          end,
+          on_failure: proc do |events|
+            session[:error] = events.as_html
+            erb :list
+          end
+        )
+      end
     end
   end
 end
