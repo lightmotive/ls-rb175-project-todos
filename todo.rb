@@ -26,6 +26,10 @@ get '/' do
   redirect '/lists'
 end
 
+# TODO: refactor the top-level app code into a separate class and each namespace
+# below into separate classes.
+# Initial guidance (Sinatra documentation doesn't cover this use case very
+# well): https://stackoverflow.com/questions/35938571/sinatra-how-to-set-namespace-for-base-class
 namespace '/lists' do
   # Render list of lists
   # get '/lists'
