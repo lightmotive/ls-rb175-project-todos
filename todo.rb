@@ -18,6 +18,7 @@ configure do
   # Generated random key using the following code (see example: https://github.com/attr-encrypted/encryptor):
   # require 'securerandom'
   # SecureRandom.hex(32)
+  set :erb, escape_html: true
 end
 
 helpers TodoApp::ViewHelpers::List, TodoApp::ViewHelpers::Lists
