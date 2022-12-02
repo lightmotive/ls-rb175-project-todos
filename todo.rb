@@ -115,12 +115,20 @@ namespace '/lists' do
       Steps.process(
         action: proc { TodoApp::Lists.new(session).delete(@list_id) },
         on_success: proc do |list|
-          session[:success] = "#{list[:name]} list was deleted."
-          redirect '/lists'
+          if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+            '/lists'
+          else
+            session[:success] = "#{list[:name]} list was deleted."
+            redirect '/lists'
+          end
         end,
         on_failure: proc do |events|
           session[:error] = events.as_html
-          erb :list_edit
+          if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+            "/lists/#{@list_id}/edit"
+          else
+            erb :list_edit
+          end
         end
       )
     end
@@ -181,12 +189,20 @@ namespace '/lists' do
         Steps.process(
           action: proc { TodoApp::Todos.new(session, @list_id).delete(@todo_id) },
           on_success: proc do |_todo|
-            session[:success] = 'Todo was deleted.'
-            redirect "/lists/#{@list_id}"
+            if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+              status 204
+            else
+              session[:success] = 'Todo was deleted.'
+              redirect "/lists/#{@list_id}"
+            end
           end,
           on_failure: proc do |events|
             session[:error] = events.as_html
-            erb :list
+            if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+              "/lists/#{@list_id}"
+            else
+              erb :list
+            end
           end
         )
       end
