@@ -16,11 +16,11 @@
     </header>
     <% if session[:error] %>
     <div class="flash error">
-      <p><%= session.delete(:error) %></p>
+      <%== session_flash_messages(session.delete(:error)) %>
     </div>
     <% elsif session[:success] %>
     <div class="flash success">
-      <p><%= session.delete(:success) %></p>
+      <%== session_flash_messages(session.delete(:success)) %>
     </div>
     <% end %>
     <main>

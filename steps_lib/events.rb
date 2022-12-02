@@ -9,14 +9,12 @@ module Steps
       @events = events
     end
 
-    def as_text
-      events.map(&:message).join("\n")
+    def messages_as_text
+      messages_as_array.join("\n")
     end
 
-    def as_html(wrapper_div_class: nil)
-      "<div#{wrapper_div_class ? "class=\"#{wrapper_div_class}\"" : ''}>\n" \
-      "<div>#{events.map(&:message).join("</div>\n<div>")}</div>\n" \
-      '</div>'
+    def messages_as_array
+      events.map(&:message)
     end
   end
 end

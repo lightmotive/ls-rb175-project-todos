@@ -7,6 +7,7 @@ require 'sinatra/content_for'
 require 'tilt/erubis'
 require './todo_app/lists'
 require './todo_app/todos'
+require './todo_app/view_helpers/layout'
 require './todo_app/view_helpers/list'
 require './todo_app/view_helpers/lists'
 require './todo_app/view_helpers/todos'
@@ -21,7 +22,8 @@ configure do
   set :erb, escape_html: true
 end
 
-helpers TodoApp::ViewHelpers::List, TodoApp::ViewHelpers::Lists
+helpers TodoApp::ViewHelpers::Layout, TodoApp::ViewHelpers::List,
+        TodoApp::ViewHelpers::Lists
 
 get '/' do
   redirect '/lists'
@@ -55,7 +57,7 @@ namespace '/lists' do
         redirect '/lists'
       end,
       on_failure: proc do |events|
-        session[:error] = events.as_html
+        session[:error] = events.messages_as_array
         erb :list_create
       end
     )
@@ -75,7 +77,7 @@ namespace '/lists' do
         action: proc { TodoApp::Lists.new(session)[@list_id] },
         on_success: proc { |list| list },
         on_failure: proc do |events|
-          session[:error] = events.as_html
+          session[:error] = events.messages_as_array
           redirect '/lists'
         end
       )
@@ -103,7 +105,7 @@ namespace '/lists' do
           redirect "/lists/#{@list_id}"
         end,
         on_failure: proc do |events|
-          session[:error] = events.as_html
+          session[:error] = events.messages_as_array
           erb :list_edit
         end
       )
@@ -123,7 +125,7 @@ namespace '/lists' do
           end
         end,
         on_failure: proc do |events|
-          session[:error] = events.as_html
+          session[:error] = events.messages_as_array
           if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
             "/lists/#{@list_id}/edit"
           else
@@ -143,7 +145,7 @@ namespace '/lists' do
           redirect "/lists/#{@list_id}"
         end,
         on_failure: proc do |events|
-          session[:error] = events.as_html
+          session[:error] = events.messages_as_array
           erb :list
         end
       )
@@ -159,7 +161,7 @@ namespace '/lists' do
           redirect "/lists/#{@list_id}"
         end,
         on_failure: proc do |events|
-          session[:error] = events.as_html
+          session[:error] = events.messages_as_array
           erb :list
         end
       )
@@ -177,7 +179,7 @@ namespace '/lists' do
           action: proc { TodoApp::Todos.new(session, @list_id)[@todo_id] },
           on_success: proc { |todo| todo },
           on_failure: proc do |events|
-            session[:error] = events.as_html
+            session[:error] = events.messages_as_array
             redirect "/#{@list_id}"
           end
         )
@@ -197,7 +199,7 @@ namespace '/lists' do
             end
           end,
           on_failure: proc do |events|
-            session[:error] = events.as_html
+            session[:error] = events.messages_as_array
             if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
               "/lists/#{@list_id}"
             else
@@ -217,7 +219,7 @@ namespace '/lists' do
             redirect "/lists/#{@list_id}"
           end,
           on_failure: proc do |events|
-            session[:error] = events.as_html
+            session[:error] = events.messages_as_array
             erb :list
           end
         )
