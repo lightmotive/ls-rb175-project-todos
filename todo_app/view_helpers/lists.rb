@@ -10,7 +10,7 @@ module TodoApp
       # Incomplete, Complete
       def lists_sorted_enum(lists, &block)
         complete_lists, incomplete_lists =
-          lists.each_with_index.partition { |list, _idx| list_complete?(list) }
+          lists.partition { |list| list_complete?(list) }
 
         incomplete_lists.each(&block)
         complete_lists.each(&block)

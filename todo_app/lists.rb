@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'random/formatter'
 require_relative 'mocks'
 require './steps_lib/steps'
 
@@ -17,6 +18,7 @@ module TodoApp
 
     def create(name, todos = [])
       list = {
+        id: Random.uuid,
         name: validate_name(name),
         todos: todos
       }
@@ -26,7 +28,10 @@ module TodoApp
     end
 
     def [](id)
-      Steps.one_step_process(data[id]) do |list, step|
+      # Acknowledgement: this isn't a performant data store; a production app
+      # would use a database for efficient lookup by unique ID.
+      # For practice purposes, this is sufficient.
+      Steps.one_step_process(get_by_id(id)) do |list, step|
         list.nil? ? step.throw_failure("That list doesn't exist.") : list
       end
     end
@@ -45,7 +50,7 @@ module TodoApp
     end
 
     def delete(id)
-      data.delete_at(id) if self[id]
+      data.delete_if { |list| list[:id] == id } if self[id]
     end
 
     private
@@ -56,13 +61,24 @@ module TodoApp
       session[:lists]
     end
 
+    def exist?(id)
+      get_by_id(id).nil?
+    end
+
+    def get_by_id(id)
+      data.select { |list| list[:id] == id }.first
+    end
+
     def list_names
       data.map { |list| list[:name] }
     end
 
-    def list_names_except(id)
+    def list_names_except(list_id)
+      list = get_by_id(list_id)
+      return list_names if list.nil?
+
       list_names_except = list_names
-      list_names_except.delete_at(id)
+      list_names_except.delete(list[:name])
       list_names_except
     end
 

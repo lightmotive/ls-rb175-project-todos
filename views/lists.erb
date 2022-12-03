@@ -3,9 +3,9 @@
 <% end %>
 
 <ul id='lists'>
-  <% lists_sorted_enum(@lists) do |list, list_id| %>
+  <% lists_sorted_enum(@lists) do |list| %>
   <li class="<%= list_container_css_class(list) %>">
-    <a href='/lists/<%= list_id %>'>
+    <a href='/lists/<%= list[:id] %>'>
       <h2><%= list[:name] %></h2>
       <p><%= list_todos_count_by_done(list: list, is_done: true) %> / <%= list_todos_count(list) %></p>
     </a>

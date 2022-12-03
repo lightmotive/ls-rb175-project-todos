@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
+require 'random/formatter'
+
 # Mock data for testing and defaults
 module TodoApp
   module Mocks
     SESSION = {
       lists: [
-        { name: 'default list',
+        {
+          id: Random.uuid,
+          name: 'default list',
           todos: [
-            { name: 'default todo', done: false }
-          ] }
+            { id: Random.uuid, name: 'default todo', done: false }
+          ]
+        }
       ]
     }.freeze
   end

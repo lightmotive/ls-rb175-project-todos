@@ -8,7 +8,7 @@ module TodoApp
       # Incomplete, Complete
       def todos_sorted_enum(todos, &block)
         complete_todos, incomplete_todos =
-          todos.each_with_index.partition { |(todo, _idx)| todo[:done] }
+          todos.partition { |todo| todo[:done] }
 
         incomplete_todos.each(&block)
         complete_todos.each(&block)

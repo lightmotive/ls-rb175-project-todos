@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'random/formatter'
 require_relative 'mocks'
 require './steps_lib/steps'
+require_relative 'lists'
 
 module TodoApp
   # Session-based Lists/Todos Data Access Object.
@@ -16,13 +18,22 @@ module TodoApp
     end
 
     def create(name)
-      todo = { name: validate_name(name), done: false }
+      todo = {
+        id: Random.uuid,
+        name: validate_name(name),
+        done: false
+      }
       data << todo
       todo
     end
 
     def [](id)
-      Steps.one_step_process(data[id]) do |todo, step|
+      # Acknowledgement: this isn't a performant data store; a production app
+      # would use a database for efficient lookup by unique ID.
+      # For practice purposes, this is sufficient.
+      Steps.one_step_process(
+        data.select { |todo| todo[:id] == id }.first
+      ) do |todo, step|
         todo.nil? ? step.throw_failure("That todo doesn't exist.") : todo
       end
     end
@@ -42,15 +53,13 @@ module TodoApp
     end
 
     def delete(id)
-      data.delete_at(id) if self[id]
+      data.delete_if { |todo| todo[:id] == id } if self[id]
     end
 
     private
 
-    attr_reader :session, :list_id
-
     def data
-      session[:lists][list_id][:todos]
+      Lists.new(@session)[@list_id][:todos]
     end
 
     def validate_name(name)

@@ -12,6 +12,8 @@ require './todo_app/view_helpers/list'
 require './todo_app/view_helpers/lists'
 require './todo_app/view_helpers/todos'
 
+UNIQUE_ID_REGEX = /[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}/
+
 configure do
   enable :sessions
   set :session_secret, 'e243e641a34e345e6da8ef3584c4b68b194778d225e53dd103080c6a74f0b3a3'
@@ -65,13 +67,13 @@ namespace '/lists' do
 
   # Specific List
   # namespace '/lists/:list_id'
-  namespace %r{/(?<list_id>-?\d+)} do
+  namespace %r{/(?<list_id>#{UNIQUE_ID_REGEX})} do
     helpers TodoApp::ViewHelpers::Todos
 
     # Validate list ID and retrieve list
     # before '/lists/:list_id'
     before do
-      @list_id = params[:list_id].to_i
+      @list_id = params[:list_id]
 
       @list = Steps.process(
         action: proc { TodoApp::Lists.new(session)[@list_id] },
@@ -169,11 +171,11 @@ namespace '/lists' do
 
     # Specific Todo in a list (nested within namespace: %r{/lists/(-?\d+)})
     # namespace '/lists/:list_id/todos/:todo_id'
-    namespace %r{/todos/(?<todo_id>-?\d+)} do
+    namespace %r{/todos/(?<todo_id>#{UNIQUE_ID_REGEX})} do
       # Validate todo ID and retrieve todo
       # before '/lists/:list_id/todos/:todo_id'
       before do
-        @todo_id = params[:todo_id].to_i
+        @todo_id = params[:todo_id]
 
         @todo = Steps.process(
           action: proc { TodoApp::Todos.new(session, @list_id)[@todo_id] },
