@@ -12,7 +12,7 @@ require './todo_app/view_helpers/list'
 require './todo_app/view_helpers/lists'
 require './todo_app/view_helpers/todos'
 
-UNIQUE_ID_REGEX = /[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}/
+UNIQUE_ID_REGEX = /[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}/.freeze
 
 configure do
   enable :sessions
