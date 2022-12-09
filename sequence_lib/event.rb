@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Steps
+module Sequence
   # Step-specific data (message and `Sequence` instructions) that a `Step` can
   # throw during `Sequence` iteration.
   class Event

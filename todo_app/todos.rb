@@ -2,7 +2,7 @@
 
 require 'random/formatter'
 require_relative 'mocks'
-require './steps_lib/steps'
+require './sequence_lib/main'
 require_relative 'lists'
 
 module TodoApp
@@ -31,7 +31,7 @@ module TodoApp
       # Acknowledgement: this isn't a performant data store; a production app
       # would use a database for efficient lookup by unique ID.
       # For practice purposes, this is sufficient.
-      Steps.one_step_process(
+      Sequence.one_step_process(
         data.select { |todo| todo[:id] == id }.first
       ) do |todo, step|
         todo.nil? ? step.throw_failure("That todo doesn't exist.") : todo
@@ -63,10 +63,10 @@ module TodoApp
     end
 
     def validate_name(name)
-      Steps::Sequence.new(
-        [Steps::Common::SanitizeWebUserInput,
-         Steps::Common::Strip,
-         Steps::Common::EnsureLengthBetween.new(1, 100, value_name: 'Name')]
+      Sequence::Sequence.new(
+        [Sequence::Common::SanitizeWebUserInput,
+         Sequence::Common::Strip,
+         Sequence::Common::EnsureLengthBetween.new(1, 100, value_name: 'Name')]
       ).process(name)
     end
   end

@@ -3,7 +3,7 @@
 require_relative '../step'
 require 'sanitize'
 
-module Steps
+module Sequence
   module Common
     # Validate a web user's input, modifying or stripping unsafe content as needed.
     class SanitizeWebUserInput < Step

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Steps
+module Sequence
   # A `Sequence`-collected array of `Step`-thrown `Event` instances.
   class Events
     attr_reader :events

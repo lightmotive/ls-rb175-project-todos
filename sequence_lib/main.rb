@@ -9,9 +9,9 @@ require_relative 'common/strip'
 require_relative 'common/ensure_length_between'
 require_relative 'common/ensure_not_in_collection'
 
-module Steps
+module Sequence
   # Convenience method to process an object with a single step using
-  # Steps::Sequence to simplify using Steps::Sequence everywhere, which
+  # Sequence::Sequence to simplify using Sequence::Sequence everywhere, which
   # simplifies `catch` usage.
   # To use, invoke with an object and a block { |object, step| } that returns
   # a processed object OR invokes `step#throw_failure("failure message")`.
@@ -23,15 +23,15 @@ module Steps
     one_step_sequence.process(object)
   end
 
-  # Helper method for intuitive Steps handling: execute action,
+  # Helper method for intuitive Sequence handling: execute action,
   # then handle success or failure.
   # - `action: proc {  }`: An action that:
   #   - On success: return an object.
-  #   - On failure: `throw(:failure, Steps::Events)`.
-  #   - `Steps::Sequence#process` meets those requirements.
+  #   - On failure: `throw(:failure, Sequence::Events)`.
+  #   - `Sequence::Sequence#process` meets those requirements.
   # - `on_success: proc { |action_proc_return_object| ... }`: invoked when
   #   `action.call` does not result in `throw(:failure)`.
-  # - `on_failure: proc { |Steps::Events| ... }`: invoked when `action.call`
+  # - `on_failure: proc { |Sequence::Events| ... }`: invoked when `action.call`
   #   results in `throw(:failure)`.
   def self.process(action:, on_success:, on_failure:)
     failure_events = catch(:failure) do

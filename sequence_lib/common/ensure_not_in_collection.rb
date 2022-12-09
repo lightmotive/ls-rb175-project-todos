@@ -2,7 +2,7 @@
 
 require_relative '../step'
 
-module Steps
+module Sequence
   module Common
     # Validate that an object is not in a collection.
     class EnsureNotInCollection < Step

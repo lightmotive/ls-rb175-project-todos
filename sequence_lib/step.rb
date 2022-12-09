@@ -2,8 +2,9 @@
 
 require_relative 'event'
 
-module Steps
-  # Base class for steps that are designed to sequentially process an object.
+module Sequence
+  # Base class for a step in a sequence that's designed to sequentially process
+  # an object.
   class Step
     def throw_failure(message)
       message = Event.new(message) if message.is_a?(String)

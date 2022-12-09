@@ -2,7 +2,7 @@
 
 require_relative 'events'
 
-module Steps
+module Sequence
   # Sequentially process an object using an enumerable collection of
   # `Step`-derived objects.
   #
@@ -22,7 +22,8 @@ module Steps
       @failure_events = []
     end
 
-    # Sequentially process object through steps in order provided during class init.
+    # Sequentially process object through steps sequence in the order provided
+    # during class init.
     # - Returns the processed object if no step throws `:step_failure`.
     # - Otherwise, will `throw(:failure, Events instance)`.
     #   `Events` instance contains events that explaining what failed.

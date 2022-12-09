@@ -52,7 +52,7 @@ namespace '/lists' do
   # Create new list
   # post '/lists/create'
   post '/create' do
-    Steps.process(
+    Sequence.process(
       action: proc { TodoApp::Lists.new(session).create(params[:list_name]) },
       on_success: proc do |list|
         session[:success] = "#{list[:name]} created."
@@ -75,7 +75,7 @@ namespace '/lists' do
     before do
       @list_id = params[:list_id]
 
-      @list = Steps.process(
+      @list = Sequence.process(
         action: proc { TodoApp::Lists.new(session)[@list_id] },
         on_success: proc { |list| list },
         on_failure: proc do |events|
@@ -100,7 +100,7 @@ namespace '/lists' do
     # Update existing list
     # post '/lists/:list_id/edit'
     post '/edit' do
-      Steps.process(
+      Sequence.process(
         action: proc { TodoApp::Lists.new(session).edit(@list_id, params[:list_name]) },
         on_success: proc do |_list|
           session[:success] = 'List name updated.'
@@ -116,7 +116,7 @@ namespace '/lists' do
     # Delete list
     # post '/lists/:list_id/delete'
     post '/delete' do
-      Steps.process(
+      Sequence.process(
         action: proc { TodoApp::Lists.new(session).delete(@list_id) },
         on_success: proc do |list|
           if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
@@ -140,7 +140,7 @@ namespace '/lists' do
     # Set all todos to done
     # post '/lists/:list_id/complete'
     post '/complete' do
-      Steps.process(
+      Sequence.process(
         action: proc { TodoApp::Lists.new(session).set_todos_done(@list_id, true) },
         on_success: proc do |list|
           session[:success] = "#{list[:name]} list was completed."
@@ -156,7 +156,7 @@ namespace '/lists' do
     # Add a Todo to a list
     # post '/lists/:list_id'
     post do
-      Steps.process(
+      Sequence.process(
         action: proc { TodoApp::Todos.new(session, @list_id).create(params[:todo_name]) },
         on_success: proc do |_list|
           session[:success] = 'Todo was added.'
@@ -177,7 +177,7 @@ namespace '/lists' do
       before do
         @todo_id = params[:todo_id]
 
-        @todo = Steps.process(
+        @todo = Sequence.process(
           action: proc { TodoApp::Todos.new(session, @list_id)[@todo_id] },
           on_success: proc { |todo| todo },
           on_failure: proc do |events|
@@ -190,7 +190,7 @@ namespace '/lists' do
       # Delete Todo from a list
       # post '/lists/:list_id/todos/:todo_id/delete'
       post '/delete' do
-        Steps.process(
+        Sequence.process(
           action: proc { TodoApp::Todos.new(session, @list_id).delete(@todo_id) },
           on_success: proc do |_todo|
             if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
@@ -215,7 +215,7 @@ namespace '/lists' do
       # post '/lists/:list_id/todos/:todo_id/check'
       post '/check' do
         mark_value = (params['done'] == 'true')
-        Steps.process(
+        Sequence.process(
           action: proc { TodoApp::Todos.new(session, @list_id).mark(@todo_id, done: mark_value) },
           on_success: proc do |_todo|
             redirect "/lists/#{@list_id}"

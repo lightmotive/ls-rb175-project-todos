@@ -2,7 +2,7 @@
 
 require 'random/formatter'
 require_relative 'mocks'
-require './steps_lib/steps'
+require './sequence_lib/main'
 
 module TodoApp
   # Session-based Lists Data Access Object.
@@ -31,7 +31,7 @@ module TodoApp
       # Acknowledgement: this isn't a performant data store; a production app
       # would use a database for efficient lookup by unique ID.
       # For practice purposes, this is sufficient.
-      Steps.one_step_process(get_by_id(id)) do |list, step|
+      Sequence.one_step_process(get_by_id(id)) do |list, step|
         list.nil? ? step.throw_failure("That list doesn't exist.") : list
       end
     end
@@ -83,11 +83,11 @@ module TodoApp
     end
 
     def validate_name(name, id: nil)
-      Steps::Sequence.new(
-        [Steps::Common::SanitizeWebUserInput,
-         Steps::Common::Strip,
-         Steps::Common::EnsureLengthBetween.new(1, 100, value_name: 'Name'),
-         Steps::Common::EnsureNotInCollection.new(
+      Sequence::Sequence.new(
+        [Sequence::Common::SanitizeWebUserInput,
+         Sequence::Common::Strip,
+         Sequence::Common::EnsureLengthBetween.new(1, 100, value_name: 'Name'),
+         Sequence::Common::EnsureNotInCollection.new(
            id ? list_names_except(id) : list_names,
            'That list name exists. Please enter a unique name.'
          )]

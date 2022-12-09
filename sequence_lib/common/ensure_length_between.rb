@@ -2,7 +2,7 @@
 
 require_relative '../step'
 
-module Steps
+module Sequence
   module Common
     # Validate that the size of an object is between a min and max.
     class EnsureLengthBetween < Step

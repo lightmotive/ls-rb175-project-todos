@@ -2,7 +2,7 @@
 
 require_relative '../step'
 
-module Steps
+module Sequence
   module Common
     # Invoke `strip` on object.
     class Strip < Step
