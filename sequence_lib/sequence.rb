@@ -4,7 +4,7 @@ require_relative 'events'
 
 module Sequence
   # Sequentially process an object using an enumerable collection of
-  # `Step`-derived objects.
+  # `Step`-like objects.
   #
   # `::new(enumerable_of_step)` - each `step` element must:
   # - Be one of the following:
@@ -32,7 +32,7 @@ module Sequence
 
       @steps.each do |step|
         break if catch(:abort_sequence) do
-                   object = execute_step(object, initialize_step(step))
+                   object = execute_step(object, step)
                    false
                  end
       end
@@ -42,17 +42,18 @@ module Sequence
 
     private
 
-    def initialize_step(step)
-      return step.new if step.is_a?(Class)
-
-      step
-    end
-
     def execute_step(object, step)
+      step = initialize_step(step)
       event = catch(:step_failure) do
         return step.process(object)
       end
       process_failure(event)
+    end
+
+    def initialize_step(step)
+      return step.new if step.is_a?(Class)
+
+      step
     end
 
     def process_failure(event)
