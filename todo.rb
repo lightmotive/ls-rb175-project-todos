@@ -119,7 +119,7 @@ namespace '/lists' do
       Sequence.process(
         action: proc { TodoApp::Lists.new(session).delete(@list_id) },
         on_success: proc do |list|
-          if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+          if request.xhr? # env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
             '/lists'
           else
             session[:success] = "#{list[:name]} list was deleted."
@@ -128,7 +128,7 @@ namespace '/lists' do
         end,
         on_failure: proc do |events|
           session[:error] = events.messages_as_array
-          if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+          if request.xhr? # env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
             "/lists/#{@list_id}/edit"
           else
             erb :list_edit
@@ -193,7 +193,7 @@ namespace '/lists' do
         Sequence.process(
           action: proc { TodoApp::Todos.new(session, @list_id).delete(@todo_id) },
           on_success: proc do |_todo|
-            if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+            if request.xhr? # env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
               status 204
             else
               session[:success] = 'Todo was deleted.'
@@ -202,7 +202,7 @@ namespace '/lists' do
           end,
           on_failure: proc do |events|
             session[:error] = events.messages_as_array
-            if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+            if request.xhr? # env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
               "/lists/#{@list_id}"
             else
               erb :list
